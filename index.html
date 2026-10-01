@@ -156,15 +156,23 @@
 <footer>Kibo · <b>@kibohabit</b> · <span style="color:var(--text2)">apps.apple.com/app/id6779782499</span></footer>
 
 <script>
-  // TikTok, Instagram, Facebook and similar in-app browsers cannot open App Store
-  // links. Detect them and surface the "open in Safari / search Kibo" banner so the
-  // visitor knows exactly how to actually download.
   (function () {
     var ua = (navigator.userAgent || '').toLowerCase();
-    var inApp = /(tiktok|musical_ly|bytedance|instagram|fbav|fban|fb_iab|line\/|snapchat|pinterest|twitter|gsa\/)/.test(ua);
-    if (inApp) {
-      var el = document.getElementById('iab');
-      if (el) el.hidden = false;
-    }
+    var inApp = /(tiktok|musical_ly|bytedance|trill|instagram|fbav|fban|fb_iab|line\/|snapchat|pinterest|twitter|gsa\/)/.test(ua);
+    // In-app browsers (TikTok/Instagram/etc.) can't open App Store links. Show the
+    // "open in Safari / search Kibo" banner so visitors know how to actually download.
+    if (inApp) { var el = document.getElementById('iab'); if (el) el.hidden = false; }
+
+    // On tapping Download, first try the App Store app's own URL scheme — it can
+    // sometimes escape an in-app webview where the https link gets blocked. Fall
+    // back to the normal web link for regular browsers.
+    document.querySelectorAll('a.btn').forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        e.preventDefault();
+        var nav = 'https://apps.apple.com/app/id6779782499';
+        try { window.location.href = 'itms-apps://apps.apple.com/app/id6779782499'; } catch (err) {}
+        setTimeout(function () { window.location.href = nav; }, 600);
+      });
+    });
   })();
 </script>
